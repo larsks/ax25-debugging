@@ -1,5 +1,6 @@
-# This is a minimal(-ish) kernel configuration for debugging ax.25 issues in a
-# virtual environment. It includes only virtio device drivers.
+#
+# Automatically generated file; DO NOT EDIT.
+# Linux/x86 6.9.0-rc5 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc (GCC) 13.2.1 20240316 (Red Hat 13.2.1-7)"
 CONFIG_CC_IS_GCC=y
@@ -3025,6 +3026,7 @@ CONFIG_ARCH_HAS_COPY_MC=y
 CONFIG_ARCH_STACKWALK=y
 CONFIG_STACKDEPOT=y
 CONFIG_STACKDEPOT_MAX_FRAMES=64
+CONFIG_REF_TRACKER=y
 CONFIG_SBITMAP=y
 # CONFIG_LWQ_TEST is not set
 # end of Library routines
@@ -3114,7 +3116,7 @@ CONFIG_HAVE_KCSAN_COMPILER=y
 #
 # Networking Debugging
 #
-# CONFIG_NET_DEV_REFCNT_TRACKER is not set
+CONFIG_NET_DEV_REFCNT_TRACKER=y
 # CONFIG_NET_NS_REFCNT_TRACKER is not set
 # CONFIG_DEBUG_NET is not set
 # end of Networking Debugging
