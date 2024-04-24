@@ -1,6 +1,5 @@
-#
-# Automatically generated file; DO NOT EDIT.
-# Linux/x86 6.9.0-rc5 Kernel Configuration
+# This is a minimal(-ish) kernel configuration for debugging ax.25 issues in a
+# virtual environment. It includes only virtio device drivers.
 #
 CONFIG_CC_VERSION_TEXT="gcc (GCC) 13.2.1 20240316 (Red Hat 13.2.1-7)"
 CONFIG_CC_IS_GCC=y
