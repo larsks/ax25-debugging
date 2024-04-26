@@ -134,7 +134,10 @@ def cmd_ax_devs(arg, from_tty):
     for axdev in ax25_list_devs():
         gdb.write(
             f"{axdev['dev']['name'].string()} "
-            f"refcnt:{int(axdev['refcount']['refs']['counter']):02}"
+            f"axrefcnt:{int(axdev['refcount']['refs']['counter']):02} "
+            f"devrefcnt:{int(axdev['dev']['dev_refcnt']['refs']['counter']):02} "
+            f"untracked:{int(axdev['dev']['refcnt_tracker']['untracked']['refs']['counter']):02} "
+            f"notrack:{int(axdev['dev']['refcnt_tracker']['no_tracker']['refs']['counter']):02} "
             "\n"
         )
 
@@ -150,6 +153,7 @@ def cmd_ax_sockets(arg, from_tty):
             f"src:{ax2asc(axsock['source_addr']['ax25_call']):10} dst:{ax2asc(axsock['dest_addr']['ax25_call']):10} "
             f"cb:{int(axsock['refcount']['refs']['counter']):02} "
             f"dev:{int(axsock['ax25_dev']['refcount']['refs']['counter']):02} "
+            f"tracker:{axsock['dev_tracker'].format_string()} "
             "\n"
         )
 
