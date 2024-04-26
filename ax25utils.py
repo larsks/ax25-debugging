@@ -117,7 +117,7 @@ def gdbcommand(name, command_class=gdb.COMMAND_USER):
     def outside(func):
         class Command(gdb.Command):
             def __init__(self):
-                super().__init__(name, gdb.COMMAND_USER)
+                super().__init__(name, command_class)
 
             def invoke(self, arg, from_tty):
                 return func(arg, from_tty)
