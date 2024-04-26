@@ -113,6 +113,21 @@ def ax25_list_sockets():
         yield axsock
 
 
+def gdbfunction(name):
+    def outside(func):
+        class Function(gdb.Function):
+            def __init__(self):
+                super().__init__(name)
+
+            def invoke(self, arg):
+                return func(arg)
+
+        Function.__doc__ = func.__doc__
+        Function()
+
+    return outside
+
+
 def gdbcommand(name, command_class=gdb.COMMAND_USER):
     def outside(func):
         class Command(gdb.Command):
@@ -173,3 +188,9 @@ def ignore_errors(arg, from_tty):
         gdb.execute(arg, from_tty)
     except Exception:
         pass
+
+
+@gdbfunction("is_optimized_out")
+def is_optimized_out(arg):
+    val = gdb.parse_and_eval(arg.string())
+    return val.is_optimized_out
