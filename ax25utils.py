@@ -163,3 +163,13 @@ def cmd_ax_notify(arg, from_tty):
     """Show information about a device notifiy event"""
     info = ax_dev_from_notify()
     gdb.write(f"dev:{info['name']} event:{info['event']}\n")
+
+
+# via https://sourceware.org/legacy-ml/gdb/2010-06/msg00100.html
+@gdbcommand("ignore-errors")
+def ignore_errors(arg, from_tty):
+    """Execute a single command, ignoring all errors."""
+    try:
+        gdb.execute(arg, from_tty)
+    except Exception:
+        pass
