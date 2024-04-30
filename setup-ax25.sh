@@ -5,6 +5,11 @@
 CALLSIGN=$1
 shift
 
+if [[ -z $CALLSIGN ]]; then
+	echo "$0: usage: ${0##*/} callsign" >&2
+	exit 1
+fi
+
 cat >/etc/ax25/axports <<EOF
 #portname       callsign        speed   paclen  window  description
 udp0 ${CALLSIGN}-0 9600 255 2 axudp0
