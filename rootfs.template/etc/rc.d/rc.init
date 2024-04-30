@@ -4,3 +4,15 @@ mkdir -p /tmp /dev/pts /proc /sys /var /var/log /run /tracing /var/lock
 mount -a
 ip link set lo up
 syslogd -C
+
+for virtiofs in /sys/bus/virtio/drivers/9pnet_virtio/*; do
+	[ -d "$virtiofs" ] || continue
+	tag=$(cat $virtiofs/mount_tag)
+	[ "$tag" = root ] && continue
+	mkdir -p /vol/$tag
+	mount -t 9p -o version=9p2000.L,trans=virtio $tag /vol/$tag
+done
+
+if [ -f /vol/test/runtest.sh ]; then
+	bash /vol/test/runtest.sh
+fi
