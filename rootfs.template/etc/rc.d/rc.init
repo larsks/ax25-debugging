@@ -13,6 +13,10 @@ for virtiofs in /sys/bus/virtio/drivers/9pnet_virtio/*; do
 	mount -t 9p -o version=9p2000.L,trans=virtio $tag /vol/$tag
 done
 
-if [ -f /vol/test/runtest.sh ]; then
-	bash /vol/test/runtest.sh
-fi
+for vol in /vol/*; do
+	if [ -x "$vol/autorun" ]; then
+		"$vol/autorun"
+	elif [ -f "$vol/autorun.sh" ]; then
+		bash "$vol/autorun.sh"
+	fi
+done
