@@ -9,7 +9,8 @@ fi
 
 podman run -i --name rootfs.$$ alpine sh <<'EOF'
 apk update
-apk add bash ax25-tools ax25-apps iproute2 net-tools
+apk add bash ax25-tools ax25-apps iproute2 net-tools neovim
+ln -s nvim /usr/bin/vim
 EOF
 
 podman export rootfs.$$ | tar -C rootfs -xf-
