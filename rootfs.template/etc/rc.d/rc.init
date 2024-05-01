@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mkdir -p /tmp /dev/pts /proc /sys /var /var/log /run /tracing /var/lock
+mkdir -p /tmp /dev/pts /proc /sys /var /var/log /run /tracing /var/lock /vol
 mount -a
 ip link set lo up
 syslogd -C
