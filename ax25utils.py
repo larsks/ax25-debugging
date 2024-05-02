@@ -80,6 +80,7 @@ def ax_dev_from_notify():
 
 
 def ax2asc(val):
+    """Make a callsign readable"""
     callsign_chars = []
 
     if val[0] == 0:
@@ -98,6 +99,7 @@ def ax2asc(val):
 
 
 def ax25_list_devs():
+    """List elements of ax25_dev_list"""
     ax25_dev_list = gdb.parse_and_eval("ax25_dev_list")
     while ax25_dev_list:
         yield ax25_dev_list
@@ -115,6 +117,8 @@ def ax25_list_sockets():
 
 
 def gdbfunction(name):
+    """Decorator for turning a Python function into a gdb convenience function."""
+
     def outside(func):
         class Function(gdb.Function):
             def __init__(self):
@@ -130,6 +134,8 @@ def gdbfunction(name):
 
 
 def gdbcommand(name, command_class=gdb.COMMAND_USER):
+    """Decorator for turning a Python function into a gdb command."""
+
     def outside(func):
         class Command(gdb.Command):
             def __init__(self):
