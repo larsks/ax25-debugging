@@ -1,12 +1,10 @@
 import sys
 import gdb
+import gdb.printing
 
-sys.path.append("scripts/gdb")
-from linux import lists, utils
-
-ax25_cb_type = utils.CachedType("struct ax25_cb")
-ax25_dev_type = utils.CachedType("struct ax25_dev")
-netdev_notifier_info_type = utils.CachedType("struct netdev_notifier_info")
+ax25_cb_type = gdb.lookup_type("struct ax25_cb")
+ax25_dev_type = gdb.lookup_type("struct ax25_dev")
+netdev_notifier_info_type = gdb.lookup_type("struct netdev_notifier_info")
 
 ax25_state = ["LISTEN", "SABM_SENT", "DISC_SENT", "ESTABLISHED", "RECOVERY"]
 netdev_events = [
@@ -74,7 +72,7 @@ def ax_dev_from_notify():
     event_name = netdev_events[event]
 
     ptr = gdb.parse_and_eval("ptr")
-    ndi = ptr.cast(netdev_notifier_info_type.get_type().pointer())
+    ndi = ptr.cast(netdev_notifier_info_type.pointer())
     dev = ndi.referenced_value()["dev"]
     name = dev["name"].string()
 
@@ -107,10 +105,13 @@ def ax25_list_devs():
 
 
 def ax25_list_sockets():
-    ax25_cb_ptr_type = ax25_cb_type.get_type().pointer()
+    """List elements of ax25_list"""
+    ax25_cb_ptr_type = ax25_cb_type.pointer()
     ax25_list = gdb.parse_and_eval("ax25_list").address
-    for axsock in lists.hlist_for_each_entry(ax25_list, ax25_cb_ptr_type, "ax25_node"):
-        yield axsock
+    axsock = ax25_list["first"]
+    while axsock:
+        yield axsock.cast(ax25_cb_ptr_type)
+        axsock = axsock["next"]
 
 
 def gdbfunction(name):
