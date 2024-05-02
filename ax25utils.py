@@ -51,6 +51,25 @@ netdev_events = [
     "NETDEV_XDP_FEAT_CHANGE",
 ]
 
+ax25_values = [
+    "AX25_VALUES_IPDEFMODE",
+    "AX25_VALUES_AXDEFMODE",
+    "AX25_VALUES_BACKOFF",
+    "AX25_VALUES_CONMODE",
+    "AX25_VALUES_WINDOW",
+    "AX25_VALUES_EWINDOW",
+    "AX25_VALUES_T1",
+    "AX25_VALUES_T2",
+    "AX25_VALUES_T3",
+    "AX25_VALUES_IDLE",
+    "AX25_VALUES_N2",
+    "AX25_VALUES_PACLEN",
+    "AX25_VALUES_PROTOCOL",
+    "AX25_VALUES_DS_TIMEOUT",
+]
+
+printer = gdb.printing.RegexpCollectionPrettyPrinter("ax25")
+
 
 class FinishBreakpoint(gdb.FinishBreakpoint):
     def __init__(self, commands):
@@ -114,6 +133,22 @@ def ax25_list_sockets():
     while axsock:
         yield axsock.cast(ax25_cb_ptr_type)
         axsock = axsock["next"]
+
+
+def gdbprinter(name, regexp):
+    """Dectorator for turning a Python function into a gdb pretty printer"""
+
+    def outside(func):
+        class PrettyPrinter(gdb.ValuePrinter):
+            def __init__(self, val):
+                self.__val = val
+
+            def to_string(self):
+                return func(self.__val)
+
+        printer.add_printer(name, regexp, PrettyPrinter)
+
+    return outside
 
 
 def gdbfunction(name):
@@ -201,3 +236,29 @@ def ignore_errors(arg, from_tty):
 def is_optimized_out(arg):
     val = gdb.parse_and_eval(arg.string())
     return val.is_optimized_out
+
+
+@gdbprinter("ax25_cb", "^ax25_cb$")
+def ax25_cb_printer(val):
+    return (
+        "AX25_CB: "
+        f"state:{ax25_state[val['state']]} "
+        f"dev:{val['ax25_dev']['dev']['name'].string()} "
+        f"src:{ax2asc(val['source_addr']['ax25_call'])} dst:{ax2asc(val['dest_addr']['ax25_call'])} "
+        f"refcount:{int(val['refcount']['refs']['counter'])} "
+        f"dev_tracker:{val['dev_tracker'].format_string()} "
+        "\n"
+    )
+
+
+@gdbprinter("refcount_t", "^refcount_struct$")
+def refcount_t_printer(val):
+    return f"<{val["refs"]["counter"]}>"
+
+
+@gdbprinter("refcnt_tracker", "^ref_tracker_dir")
+def ref_tracker_printer(val):
+    return f"<untracked:{val['untracked'].format_string()} no_tracker:{val['no_tracker'].format_string()}"
+
+
+gdb.printing.register_pretty_printer(gdb.current_objfile(), printer)
