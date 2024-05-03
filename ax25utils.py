@@ -261,4 +261,13 @@ def ref_tracker_printer(val):
     return f"<untracked:{val['untracked'].format_string()} no_tracker:{val['no_tracker'].format_string()}"
 
 
-gdb.printing.register_pretty_printer(gdb.current_objfile(), printer)
+@gdbcommand("prefix-output")
+def prefix_output(arg, from_tty):
+    prefix, arg = arg.split(None, 1)
+    res = gdb.execute(arg, from_tty, True)
+    for line in res.splitlines():
+        gdb.write(f"{prefix} {line}\n")
+
+
+def register_pretty_printer():
+    gdb.printing.register_pretty_printer(gdb.current_objfile(), printer)
