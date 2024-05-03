@@ -42,6 +42,13 @@ show_ax_info ax25_bind
 continue
 end
 
+break ax25_rcv
+commands
+silent
+show_ax_info ax25_rcv
+continue
+end
+
 #break ax25_device_event if ((struct netdev_notifier_info *)ptr)->dev->type == 3
 #commands
 #silent
