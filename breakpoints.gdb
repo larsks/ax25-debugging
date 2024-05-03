@@ -1,9 +1,9 @@
 define show_ax_info
 echo === $arg0 ===\n
-echo ENTER:\n
-ax-devs
-ax-sockets
-py FinishBreakpoint([r"echo EXIT:\n", "ax-sockets", "ax-devs"])
+prefix-output $arg0 echo ENTER:\n
+prefix-output $arg0 ax-devs
+prefix-output $arg0 ax-sockets
+py FinishBreakpoint([r"prefix-output $arg0 echo EXIT:\n", "prefix-output $arg0 ax-sockets", "prefix-output $arg0 ax-devs"])
 end
 
 # Display the contents of ax25_list before and after certain functions
