@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# usage: setup-ax25.sh mycallsign [remotecallsign@remotehost:remoteport [...]]
+# usage: setup-ax25.sh <callsign> [<ax25ipd_route> [...]]
 
 CALLSIGN=$1
 shift
@@ -26,12 +26,8 @@ broadcast QST-0 NODES-0 FBB-0
 
 route ${CALLSIGN}-1 localhost udp 10094
 $(
-	for spec in "$@"; do
-		remotecs=${spec%@*}
-		hostport=${spec#*@}
-		remotehost=${hostport%:*}
-		remoteport=${hostport#*:}
-		echo "route ${remotecs} ${remotehost} udp ${remoteport}"
+	for route in "$@"; do
+		echo "route $route"
 	done
 )
 EOF
