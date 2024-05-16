@@ -1,6 +1,31 @@
 #!/bin/bash
 #
 # usage: setup-ax25.sh <callsign> [<ax25ipd_route> [...]]
+#
+# On a single system, you could run:
+#
+#     bash setup-ax25.sh node0
+#
+# This gets you two ax.25 ports, one for callsign `node0` and one
+# for callsign `node0-1`. You can then connect from one to the other:
+#
+#     axcall -r udp0 node0-1
+#     axcall -r udp1 node0
+#
+# If you want to use multiple hosts, you can run on one:
+#
+#     bash setup-ax25.sh node0 'node1 node1 udp 10093 bd'
+#
+# And on the other:
+#
+#     bash setup-ax25.sh node1 'node0 node0 udp 10093 bd'
+#
+# This assumes that you have two systems, `node0` and `node1`, and
+# that the hostnames resolve correctly. Once configured, you can connect
+# from node0 to node1 like this:
+#
+#     axcall -r udp0 node1
+
 
 CALLSIGN=$1
 shift
