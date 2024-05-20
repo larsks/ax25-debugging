@@ -216,3 +216,47 @@ You may find that the kernel gets stuck at this point, repeating on the console 
 ```
 unregister_netdevice: waiting for ax1 to become free. Usage count = 0
 ```
+
+## Automated testing
+
+The `checkkernel.sh` script in this repository can be used to automatically test the kernel to see if it suffers from these refcount issues. This requires that you have `qemu-system-x86_64` available (for booting the kernel) and `docker` available (for building the root filesystem). **NB**: This script will overwrite your `.config` file with one designed explicitly for booting in qemu.
+
+Check out this repository in a subdirectory of the Linux kernel, e.g.:
+
+```
+cd linux
+git clone https://github.com/larsks/ax25-debugging
+```
+
+From the kernel source directory, run the `checkkernel.sh` script:
+
+```
+./ax25-debugging/checkkernel.sh
+```
+
+This will:
+
+- Create a root filesystem tree named `rootfs` if one does not already exist
+- Run `make clean`
+- Copy the config from this repository into the kernel tree and run `make oldconfig`
+- Build the kernel
+- Boot the kernel using qemu
+- Run the commands in `checkkernel/autorun.sh`
+- Display a result in the terminal
+- Log results to `results/<commit id>`. When the script completes, this
+  directory will have the build log, the console log, and other artifacts
+  generated during the test.
+
+Output from the script looks something like this:
+
+```
+*** results and logs in results/eb6a9339ef
+*** cleaning kernel (eb6a9339ef)
+*** configuring kernel (eb6a9339ef)
+*** building kernel using 20 cores (eb6a9339ef)
+*** booting kernel (eb6a9339ef)
+*** eb6a9339ef FAIL
+*** all done (eb6a9339ef)
+```
+
+Because the script performs a kernel build from scratch it can take a long time to run.

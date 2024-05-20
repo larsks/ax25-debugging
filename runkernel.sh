@@ -47,20 +47,6 @@ if ((net_user)); then
 	network_args+=(-nic "user,model=virtio-net-pci")
 fi
 
-cat <<EOF
-===========================================================================
-
-             ▄▄         ▄▄▄▄▄▄   ▄▄▄   ▄▄  ▄▄    ▄▄  ▄▄▄  ▄▄▄ 
-             ██         ▀▀██▀▀   ███   ██  ██    ██   ██▄▄██  
-             ██           ██     ██▀█  ██  ██    ██    ████   
-             ██           ██     ██ ██ ██  ██    ██     ██    
-             ██           ██     ██  █▄██  ██    ██    ████   
-             ██▄▄▄▄▄▄   ▄▄██▄▄   ██   ███  ▀██▄▄██▀   ██  ██  
-             ▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀   ▀▀   ▀▀▀    ▀▀▀▀    ▀▀▀  ▀▀▀ 
-
-===========================================================================
-EOF
-
 exec qemu-system-x86_64 -enable-kvm -m 4g \
 	-kernel "$kernel" \
 	-append "hostname=linux console=ttyS0,115200 no_timer_check net.ifnames=0 root=root rw rootfstype=9p rootflags=trans=virtio,version=9p2000.L,msize=5000000,cache=mmap,posixacl ${kernel_extra_args}" \
