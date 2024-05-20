@@ -6,7 +6,7 @@ fsdev_args=()
 network_args=()
 net_user=1
 kernel_extra_args=""
-rootfs="rootfs"
+rootfs="rootfs.cpio.gz"
 kernel=./arch/x86_64/boot/bzImage
 
 while getopts r:b:a:nk: ch; do
@@ -49,9 +49,8 @@ fi
 
 exec qemu-system-x86_64 -enable-kvm -m 4g \
 	-kernel "$kernel" \
-	-append "hostname=linux console=ttyS0,115200 no_timer_check net.ifnames=0 root=root rw rootfstype=9p rootflags=trans=virtio,version=9p2000.L,msize=5000000,cache=mmap,posixacl ${kernel_extra_args}" \
-	-fsdev "local,path=$rootfs,id=root,security_model=none" \
-	-device virtio-9p-pci,id=root,fsdev=root,mount_tag=root \
+	-append "hostname=linux console=ttyS0,115200 no_timer_check net.ifnames=0 rw ${kernel_extra_args}" \
+	-initrd "$rootfs" \
 	-smp 2 \
 	"${network_args[@]}" \
 	"${fsdev_args[@]}" \

@@ -1,4 +1,4 @@
-::sysinit:/etc/rc.d/rc.init
+ttyS0::sysinit:/etc/rc.d/rc.init
 
 ttyS0::respawn:/bin/bash
 tty0::respawn:/bin/bash

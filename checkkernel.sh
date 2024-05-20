@@ -3,7 +3,7 @@
 unset KCONFIG
 tooldir=$(readlink -f "${0%/*}")
 
-if ! [[ -d rootfs ]]; then
+if ! [[ -f rootfs.cpio.gz ]]; then
 	echo "*** no rootfs -- creating root filesystem"
 	"$tooldir/make-rootfs.sh"
 fi

@@ -236,7 +236,7 @@ From the kernel source directory, run the `checkkernel.sh` script:
 
 This will:
 
-- Create a root filesystem tree named `rootfs` if one does not already exist
+- Create an initramfs image named `rootfs.cpio.gz` if it does not already exist
 - Run `make clean`
 - Copy the config from this repository into the kernel tree and run `make oldconfig`
 - Build the kernel
