@@ -119,10 +119,12 @@ def ax2asc(val):
 
 def ax25_list_devs():
     """List elements of ax25_dev_list"""
+    ax25_dev_ptr_type = ax25_dev_type.pointer()
     ax25_dev_list = gdb.parse_and_eval("ax25_dev_list")
-    while ax25_dev_list:
-        yield ax25_dev_list
-        ax25_dev_list = ax25_dev_list["next"]
+    axdev = ax25_dev_list["next"]
+    while axdev != ax25_dev_list.address:
+        yield axdev.cast(ax25_dev_ptr_type)
+        axdev = axdev["next"]
 
 
 def ax25_list_sockets():
