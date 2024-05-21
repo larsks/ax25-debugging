@@ -1,12 +1,14 @@
-From 4d48cb7873313db02cb0fb0b7667d1bd1eab22c6 Mon Sep 17 00:00:00 2001
+From c7cb04a5c505c793e0f8783da9c90a978d557cf9 Mon Sep 17 00:00:00 2001
 From: Lars Kellogg-Stedman <lars@oddbit.com>
 Date: Sat, 4 May 2024 08:11:17 -0400
-Subject: [PATCH] ax25: Fix (more) netdev refcount issues
+Subject: [PATCH v4] ax25: Fix refcount imbalance on inbound connections
+To: linux-hams@vger.kernel.org,netdev@vger.kernel.org
 
-When closing a socket in ax25_release(), we call netdev_put() to decrease
-the refcount on the ax.25 device. However, the execution path for accepting
-an incoming connection never calls netdev_hold(). This imbalance leads to
-refcount errors, and ultimately to kernel crashes.
+When releasing a socket in ax25_release(), we call netdev_put() to
+decrease the refcount on the associated ax.25 device. However, the
+execution path for accepting an incoming connection never calls
+netdev_hold(). This imbalance leads to refcount errors, and ultimately
+to kernel crashes.
 
 A typical call trace for the above situation looks like this:
 
@@ -30,30 +32,32 @@ A typical call trace for the above situation looks like this:
 On reboot (or any attempt to remove the interface), the kernel gets
 stuck in an infinite loop:
 
-    unregister_netdevice: waiting for ax1 to become free. Usage count = 0
+    unregister_netdevice: waiting for ax0 to become free. Usage count = 0
 
-The attached patch corrects these issues by ensuring that we call
-netdev_hold() and ax25_dev_hold() in ax25_accept().
+This patch corrects these issues by ensuring that we call netdev_hold()
+and ax25_dev_hold() for new connections in ax25_accept().
 
-Fixes: 7d8a3a477b
+Fixes: 7d8a3a477b ("ax25: Fix ax25 session cleanup problems")
 Signed-off-by: Lars Kellogg-Stedman <lars@oddbit.com>
 ---
  net/ax25/af_ax25.c | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 9169efb2f43..5aa6e5c3495 100644
+index 9d11d26e46c0..26a3095bec46 100644
 --- a/net/ax25/af_ax25.c
 +++ b/net/ax25/af_ax25.c
-@@ -1381,6 +1381,8 @@ static int ax25_accept(struct socket *sock, struct socket *newsock, int flags,
+@@ -1378,8 +1378,10 @@ static int ax25_accept(struct socket *sock, struct socket *newsock, int flags,
+ {
+ 	struct sk_buff *skb;
+ 	struct sock *newsk;
++	ax25_dev *ax25_dev;
  	DEFINE_WAIT(wait);
  	struct sock *sk;
- 	int err = 0;
 +	ax25_cb *ax25;
-+	ax25_dev *ax25_dev;
+ 	int err = 0;
  
  	if (sock->state != SS_UNCONNECTED)
- 		return -EINVAL;
 @@ -1434,6 +1436,10 @@ static int ax25_accept(struct socket *sock, struct socket *newsock, int flags,
  	kfree_skb(skb);
  	sk_acceptq_removed(sk);
